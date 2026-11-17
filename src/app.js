@@ -20,4 +20,6 @@ app.get('/convert', (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+
+  const inutile = 1;
 });

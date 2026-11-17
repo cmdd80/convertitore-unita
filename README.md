@@ -15,3 +15,4 @@ Esempio: http://localhost:3000/convert?value=10&from=mm&to=in
 ## Test
 
 npm test
+Ciao!

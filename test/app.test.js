@@ -26,6 +26,12 @@ test('GET /convert restituisce il valore convertito', async () => {
   assert.equal(await res.json(), 25.4);
 });
 
+test('GET /convert converte le temperature con lo stesso formato', async () => {
+  const res = await fetch(`${baseUrl}/convert?value=100&from=C&to=F`);
+  assert.equal(res.status, 200);
+  assert.equal(await res.json(), 212);
+});
+
 test('GET /convert rifiuta un valore non numerico', async () => {
   const res = await fetch(`${baseUrl}/convert?value=abc&from=in&to=mm`);
   assert.equal(res.status, 400);

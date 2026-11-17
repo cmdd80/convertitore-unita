@@ -1,5 +1,7 @@
 // Ogni unità indica la grandezza a cui appartiene e il fattore
 // per passare all'unità base della grandezza (per le lunghezze: mm).
+// Le unità con scala non proporzionale (temperatura) hanno anche un
+// offset: valore_base = valore * factor + offset (base: kelvin).
 export const UNITS = {
   mm: { quantity: 'lunghezza', factor: 1 },
   cm: { quantity: 'lunghezza', factor: 10 },
@@ -13,6 +15,9 @@ export const UNITS = {
   MPa: { quantity: 'pressione', factor: 1000 },
   bar: { quantity: 'pressione', factor: 100 },
   psi: { quantity: 'pressione', factor: 6.894757 },
+  K: { quantity: 'temperatura', factor: 1, offset: 0 },
+  C: { quantity: 'temperatura', factor: 1, offset: 273.15 },
+  F: { quantity: 'temperatura', factor: 5 / 9, offset: 273.15 - (32 * 5) / 9 },
 };
 
 const DECIMALS = 3;
@@ -27,10 +32,13 @@ export function convert(value, from, to) {
     throw new Error(`Impossibile convertire ${from} in ${to}`);
   }
 
-  return round((value * source.factor) / target.factor);
+  const base = value * source.factor + (source.offset ?? 0);
+  return round((base - (target.offset ?? 0)) / target.factor);
 }
 
 function round(n) {
   const scale = 10 ** DECIMALS;
-  return Math.trunc(n * scale) / scale;
+  // toFixed elimina il rumore della virgola mobile (es. 211.99999999999997)
+  // prima del troncamento; "|| 0" evita di restituire -0.
+  return Math.trunc(Number((n * scale).toFixed(6))) / scale || 0;
 }
